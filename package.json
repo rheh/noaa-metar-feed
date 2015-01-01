@@ -1,0 +1,30 @@
+{
+  "name": "noaa-metar-feed",
+  "version": "0.0.0",
+  "description": "Pulls the latest coded METAR collectives from NOAA as described here http://www.nws.noaa.gov/tg/datahelp.php and decodes to JSON format.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rheh/noaa-metar-feed.git"
+  },
+  "keywords": [
+    "METAR",
+    "NOAA",
+    "Weather",
+    "ICAO",
+    "Airfields"
+  ],
+  "author": "Ray Hammond",
+  "license": "GNU GPL2",
+  "bugs": {
+    "url": "https://github.com/rheh/noaa-metar-feed/issues"
+  },
+  "homepage": "https://github.com/rheh/noaa-metar-feed",
+  "dependencies": {
+    "jsftp": "^1.3.9",
+    "q": "^1.1.2"
+  }
+}
