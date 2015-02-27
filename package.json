@@ -24,7 +24,9 @@
   },
   "homepage": "https://github.com/rheh/noaa-metar-feed",
   "dependencies": {
+    "bind-this": "0.0.3",
     "jsftp": "^1.3.9",
+    "metar": "^0.2.0",
     "q": "^1.1.2"
   }
 }
