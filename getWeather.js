@@ -1,62 +1,58 @@
-var fs = require('fs');
+const NOAALatestFileParser = require('./lib/NOAALatestFileParser');
+const NOAAFile = require('./lib/NOAAFile');
+const FTPHelper = require('./lib/FTPHelper');
+const MetarSaver = require('./lib/MetarSaver');
+const ICAOExtractor = require('./lib/ICAOExtractor');
 
-var NOAALatestFileParser = require('./lib/NOAALatestFileParser');
-var NOAAFile = require('./lib/NOAAFile');
-var FTPHelper = require('./lib/FTPHelper');
-var MetarSaver = require('./lib/MetarSaver');
-var ICAOExtractor = require('./lib/ICAOExtractor');
+const ftpHelper = new FTPHelper('tgftp.nws.noaa.gov');
 
-var ftpHelper = new FTPHelper('tgftp.nws.noaa.gov');
+const parseLatestFile = function(filename) {
+  const noaaLatestFileParser = new NOAALatestFileParser(
+      filename,
+      getLatestWeatherFile,
+  );
 
-var parseLatestFile = function (filename) {
-    var noaaLatestFileParser = new NOAALatestFileParser(filename, getLatestWeatherFile);
-    noaaLatestFileParser.parse();
+  noaaLatestFileParser.parse();
 };
 
-var parseLatestWeatherFile = function (latestWeatherFile) {
+const parseLatestWeatherFile = function(latestWeatherFile) {
+  const onComplete = function(metars) {
+    const metarSaver = new MetarSaver();
+    const extractor = new ICAOExtractor();
 
-    var onComplete = function (metars) {
+    metars.forEach(function(currentValue, index, array) {
+      try {
+        extractor.setMetar(currentValue);
+        const ICAO = extractor.extract();
 
-        var metarSaver = new MetarSaver();
-        var extractor = new ICAOExtractor();
+        metarSaver.setICAO(ICAO);
+        metarSaver.setData(currentValue);
+        metarSaver.save();
+      } catch (e) {
+        console.log('Skipping: ' + e);
+      }
+    });
 
-        metars.forEach(function (currentValue, index, array) {
-            
-            try {
+    process.exit(1);
+  };
 
-                extractor.setMetar(currentValue);
-                var ICAO = extractor.extract();
+  console.log('Parsing weather file', latestWeatherFile);
 
-                metarSaver.setICAO(ICAO);
-                metarSaver.setData(currentValue);
-                metarSaver.save();
-
-            } catch (e) {
-                console.log("Skipping: " + e);
-            }
-
-        });
-
-        process.exit(1);
-    };
-
-    console.log("Parsing weather file", latestWeatherFile);
-
-    var noaaFile = new NOAAFile(latestWeatherFile, onComplete);
-    noaaFile.parse();
+  const noaaFile = new NOAAFile(latestWeatherFile, onComplete);
+  noaaFile.parse();
 };
 
-var getLatestWeatherFile = function (latestFile) {
-    console.log("Latest weather file", latestFile);
-    ftpHelper.get(lsRemotePath + latestFile, './downloads/' + latestFile, parseLatestWeatherFile);
+var getLatestWeatherFile = function(latestFile) {
+  console.log('Latest weather file', latestFile);
+  ftpHelper.get(lsRemotePath + latestFile, './downloads/' + latestFile, parseLatestWeatherFile);
 };
 
 var lsRemotePath = '/SL.us008001/DF.an/DC.sflnd/DS.metar/';
-var lsRemoteFileName = lsRemotePath + 'ls-lt';
-var lsLocalFileName = './downloads/ls-lt.txt';
+const lsRemoteFileName = lsRemotePath + 'ls-lt';
+const lsLocalFileName = './downloads/ls-lt.txt';
 
 try {
-    ftpHelper.get(lsRemoteFileName, lsLocalFileName, parseLatestFile);
+  ftpHelper.get(lsRemoteFileName, lsLocalFileName, parseLatestFile);
 } catch (e) {
-    console.error(e.message);
+  console.error(e.message);
 }

@@ -28,5 +28,9 @@
     "jsftp": "^1.3.9",
     "metar": "^0.2.0",
     "q": "^1.1.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.13.0",
+    "eslint-config-google": "^0.14.0"
   }
 }
