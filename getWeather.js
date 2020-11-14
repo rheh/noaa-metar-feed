@@ -1,18 +1,13 @@
 /* eslint-disable max-len */
 /* eslint-disable require-jsdoc */
 const NOAALatestFileParser = require('./lib/NOAALatestFileParser');
-const NOAAFile = require('./lib/NOAAFile');
-const FTPHelper = require('./lib/FTPHelper');
-const MetarSaver = require('./lib/MetarSaver');
-const ICAOExtractor = require('./lib/ICAOExtractor');
-
-const ftpHelper = new FTPHelper();
+const {connect, close, get} = require('./lib/FTPHelper');
+const parseLatestWeatherFile = require('./lib/parser/latestMetarFileParser');
 
 const lsRemotePath = '/SL.us008001/DF.an/DC.sflnd/DS.metar';
 const lsRemoteFileName = 'ls-lt';
 const lsLocalFileName = './downloads/ls-lt.txt';
 const host = 'tgftp.nws.noaa.gov';
-
 
 function parseLatestFile(filename) {
   const noaaLatestFileParser = new NOAALatestFileParser(
@@ -22,38 +17,11 @@ function parseLatestFile(filename) {
   return noaaLatestFileParser.parse();
 }
 
-function parseLatestWeatherFile(latestWeatherFile) {
-  const onComplete = function(metars) {
-    const metarSaver = new MetarSaver();
-    const extractor = new ICAOExtractor();
-
-    metars.forEach(function(currentValue, index, array) {
-      try {
-        extractor.setMetar(currentValue);
-        const ICAO = extractor.extract();
-
-        metarSaver.setICAO(ICAO);
-        metarSaver.setData(currentValue);
-        metarSaver.save();
-      } catch (e) {
-        console.log('Skipping: ' + e);
-      }
-    });
-
-    process.exit(1);
-  };
-
-  console.log(`Parsing weather file ${latestWeatherFile}`);
-
-  const noaaFile = new NOAAFile(latestWeatherFile, onComplete);
-  noaaFile.parse();
-}
-
-
 async function start() {
   try {
-    await ftpHelper.connect(host);
-    await ftpHelper.get(
+    await connect(host);
+
+    await get(
         lsRemotePath,
         lsRemoteFileName,
         lsLocalFileName,
@@ -61,13 +29,17 @@ async function start() {
 
     const latest = parseLatestFile(lsLocalFileName);
 
-    const latestMetarsFile = await ftpHelper.get(
+    const latestMetarsFile = await get(
         lsRemotePath,
         latest,
         latest,
     );
 
-    parseLatestWeatherFile(latestMetarsFile);
+    const processed = await parseLatestWeatherFile(latestMetarsFile);
+
+    console.log(`Processed ${processed.length} metars`);
+
+    close();
   } catch (e) {
     console.error(e.message);
   }
