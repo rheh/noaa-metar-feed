@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable require-jsdoc */
-const NOAALatestFileParser = require('./lib/NOAALatestFileParser');
+const latestFileParser = require('./lib/parser/latestFileParser');
 const {connect, close, get} = require('./lib/FTPHelper');
 const parseLatestWeatherFile = require('./lib/parser/latestMetarFileParser');
 
@@ -9,25 +9,17 @@ const lsRemoteFileName = 'ls-lt';
 const lsLocalFileName = './downloads/ls-lt.txt';
 const host = 'tgftp.nws.noaa.gov';
 
-function parseLatestFile(filename) {
-  const noaaLatestFileParser = new NOAALatestFileParser(
-      filename,
-  );
-
-  return noaaLatestFileParser.parse();
-}
-
 async function start() {
   try {
     await connect(host);
 
-    await get(
+    const filename = await get(
         lsRemotePath,
         lsRemoteFileName,
         lsLocalFileName,
     );
 
-    const latest = parseLatestFile(lsLocalFileName);
+    const latest = await latestFileParser(filename);
 
     const latestMetarsFile = await get(
         lsRemotePath,
@@ -37,11 +29,13 @@ async function start() {
 
     const processed = await parseLatestWeatherFile(latestMetarsFile);
 
-    console.log(`Processed ${processed.length} metars`);
+    console.log(`Processed ${processed} metars`);
 
     close();
   } catch (e) {
+    console.error('Failed to get and process latest METAR file');
     console.error(e.message);
+    close();
   }
 }
 
