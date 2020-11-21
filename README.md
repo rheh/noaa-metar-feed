@@ -1,5 +1,6 @@
 noaa-metar-feed
 ===============
+[![CodeFactor](https://www.codefactor.io/repository/github/rheh/noaa-metar-feed/badge/master)](https://www.codefactor.io/repository/github/rheh/noaa-metar-feed/overview/master)
 
 Pulls the latest coded METAR collectives from NOAA as described here http://www.nws.noaa.gov/tg/datahelp.php and decodes each embedded METAR to JSON format.
 
