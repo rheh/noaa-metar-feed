@@ -3,6 +3,7 @@
 const latestFileParser = require('./lib/parser/latestFileParser');
 const {connect, close, get} = require('./lib/FTPHelper');
 const parseLatestWeatherFile = require('./lib/parser/latestMetarFileParser');
+const fs = require('fs');
 
 const lsRemotePath = '/SL.us008001/DF.an/DC.sflnd/DS.metar';
 const lsRemoteFileName = 'ls-lt';
@@ -10,6 +11,12 @@ const lsLocalFileName = './downloads/ls-lt.txt';
 const host = 'tgftp.nws.noaa.gov';
 
 async function start() {
+  const dir = './data';
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+
   try {
     await connect(host);
 
