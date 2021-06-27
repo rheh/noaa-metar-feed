@@ -19,22 +19,22 @@ test('handles missing ICAO from metar parameter being passed in', () => {
 
 test('Find ICAO in valid metar', () => {
   const bad = 'METAR EGCC 151400Z VRB02KT 9999 FEW020 26/22 Q1011=';
-  expect(metarExtractor(bad)).toBe('EGCC');
+  expect(metarExtractor(bad).icao).toBe('EGCC');
 });
 
 test('Find ICAO in NIL metar', () => {
   const bad = 'METAR CGGA NIL=';
-  expect(metarExtractor(bad)).toBe('CGGA');
+  expect(metarExtractor(bad).icao).toBe('CGGA');
 });
 
 test('Find ICAO in valid speci metar', () => {
   const good = 'SPECI YLEC 151430Z AUTO 21027G37KT 8000 // NCD 22/10 Q1013=';
-  expect(metarExtractor(good)).toBe('YLEC');
+  expect(metarExtractor(good).icao).toBe('YLEC');
 });
 
 test('Find ICAO in valid metar with numerics in ICAO', () => {
   const good = 'METAR K74V 202115Z AUTO 00000KT 10SM CLR 10/M07 A3036 RMK AO2=';
-  expect(metarExtractor(good)).toBe('K74V');
+  expect(metarExtractor(good).icao).toBe('K74V');
 });
 
 
