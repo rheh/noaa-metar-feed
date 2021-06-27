@@ -34,9 +34,9 @@ async function start() {
         latest,
     );
 
-    const processed = await parseLatestWeatherFile(latestMetarsFile);
+    const {processed, failed} = await parseLatestWeatherFile(latestMetarsFile);
 
-    console.log(`Processed ${processed} metars`);
+    console.log(`Processed ${processed} metars. ${failed} failed to decode.`);
 
     close();
   } catch (e) {
