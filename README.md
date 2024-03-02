@@ -8,8 +8,7 @@ The FTP service provided by NOAA (National Oceanic and Atmospheric Administratio
 
 This project's purpose is to allow a node service to digest the latest data by calling the following:
 
-```
+```bash
 nvm use
-node getWeather.js
+npm run start
 ```
-
