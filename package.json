@@ -1,9 +1,10 @@
 {
   "name": "noaa-metar-feed",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Pulls the latest coded METAR collectives from NOAA as described here http://www.nws.noaa.gov/tg/datahelp.php and decodes to JSON format.",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "jest"
   },
   "repository": {
@@ -24,14 +25,12 @@
   },
   "homepage": "https://github.com/rheh/noaa-metar-feed",
   "dependencies": {
-    "basic-ftp": "^4.6.3",
-    "bind-this": "0.0.3",
-    "metar": "^0.2.0",
-    "q": "^1.1.2"
+    "basic-ftp": "^5.0.5",
+    "metar": "^1.0.0"
   },
   "devDependencies": {
-    "eslint": "^7.13.0",
+    "eslint": "^8.57.0",
     "eslint-config-google": "^0.14.0",
-    "jest": "^26.6.3"
+    "jest": "^29.7.0"
   }
 }
